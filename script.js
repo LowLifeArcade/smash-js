@@ -22,6 +22,8 @@ function Player() {
     this.width = 30;
     this.height = 50;
     this.jumping = false
+    this.currentPosition
+    this.downPressed = false
 }
 
 Player.prototype.draw = function () {
@@ -77,7 +79,10 @@ function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     player.update();
     platform.draw();
-    console.log('player vel', player.velocity.x)
+
+     // logs 
+    console.log('player current pos', player)
+    // console.log('player vel', player.velocity.x)
 
     // movement logic
     if (keys.left.pressed || keys.right.pressed) {
@@ -99,6 +104,8 @@ function animate() {
         player.velocity.y = 0
         player.jumping = false
     }
+
+   
 }
 
 animate();
@@ -121,6 +128,11 @@ window.addEventListener('keydown', ({keyCode}) => {
             break;
         case 83:
             console.log('down')
+            if(player.downPressed === false && player.jumping === false) {
+                // TODO: if (playerIsOnGround) return player.currentPosition always equals currentPosition until leaving ground 
+                player.currentPosition = player.position.y
+                player.downPressed = true;
+            }
             player.height = 30
             break;
         case 32:
@@ -152,6 +164,11 @@ window.addEventListener('keyup', ({keyCode}) => {
         case 83:
             console.log('down')
             player.height = 50
+            // player.position.y = player.position.y + -10
+            if (player.downPressed === true) {
+                player.position.y = player.currentPosition
+                player.downPressed = false
+            }
             break;
         case 32:
             console.log('up')
@@ -163,3 +180,4 @@ window.addEventListener('keyup', ({keyCode}) => {
             break;
     }
 })
+
