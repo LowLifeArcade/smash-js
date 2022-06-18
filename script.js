@@ -1,5 +1,5 @@
 const canvas = document.querySelector('canvas');
-const container = document.getElementsByClassName('container')
+const container = document.getElementsByClassName('container');
 
 let c = canvas.getContext('2d');
 
@@ -47,7 +47,12 @@ Player.prototype.update = function () {
     this.position.x += this.velocity.x;
 
     // landing and jumping logic
-    if (this.position.y + this.height + this.velocity.y <= canvas.height - 20) {
+    const inAirVertically = this.position.y + this.height + this.velocity.y <= ground.position.y;
+    const inAirHorizontally =
+        player.position.x + player.width >= ground.position.x &&
+        player.position.x <= ground.position.x + ground.width;
+
+    if (inAirVertically) {
         this.velocity.y = this.velocity.y + gravity;
         this.jumping = true;
     } else {
@@ -88,7 +93,7 @@ const player = new Player();
 const platform = new Platform({ posX: 200, posY: 400 });
 const platform2 = new Platform({ posX: 800, posY: 400 });
 const platform3 = new Platform({ posX: 500, posY: 240 });
-const ground = new Ground({width: 1000})
+const ground = new Ground({ width: 1000 });
 
 const keys = {
     right: {
@@ -105,8 +110,8 @@ function animate() {
     player.update();
     platform.draw();
     platform2.draw();
-    platform3.draw()
-    ground.draw()
+    platform3.draw();
+    ground.draw();
 
     // logs
     console.log('player current pos', player);
@@ -128,15 +133,46 @@ function animate() {
     if (Math.abs(player.velocity.x) < 1.3) player.velocity.x = 0;
 
     // platform position detection TODO: Refactor to handle multiple platforms
-    if (
+    const isOnPlat1 =
         player.position.y + player.height <= platform.position.y &&
         player.position.y + player.height + player.velocity.y >= platform.position.y &&
         player.position.x + player.width >= platform.position.x &&
-        player.position.x <= platform.position.x + platform.width
-    ) {
+        player.position.x <= platform.position.x + platform.width;
+    const isOnPlat2 =
+        player.position.y + player.height <= platform2.position.y &&
+        player.position.y + player.height + player.velocity.y >= platform2.position.y &&
+        player.position.x + player.width >= platform2.position.x &&
+        player.position.x <= platform2.position.x + platform2.width;
+    const isOnPlat3 =
+        player.position.y + player.height <= platform3.position.y &&
+        player.position.y + player.height + player.velocity.y >= platform3.position.y &&
+        player.position.x + player.width >= platform3.position.x &&
+        player.position.x <= platform3.position.x + platform3.width;
+    if (isOnPlat1 || isOnPlat2 || isOnPlat3) {
         player.velocity.y = 0;
         player.jumping = false;
     }
+
+    //      // platform position detection TODO: Refactor to handle multiple platforms
+    //      const playerOnPlatform =
+    //      player.position.y + player.height <= platform.position.y &&
+    //      player.position.y + player.height + player.velocity.y >= platform.position.y &&
+    //      player.position.x + player.width >= platform.position.x &&
+    //      player.position.x <= platform.position.x + platform.width;
+
+    //  // console.log('🚀 ~ file: script.js ~ line 136 ~ animate ~ playerOnPlatform', playerOnPlatform);
+    //  const playerOnGround =
+    //      player.position.y + player.height <= ground.position.y &&
+    //      player.position.y + player.height + player.velocity.y >= ground.position.y &&
+    //      player.position.x + player.width >= ground.position.x &&
+    //      player.position.x <= ground.position.x + ground.width;
+
+    //  console.log('🚀 ~ file: script.js ~ line 143 ~ animate ~ playerOnGround', playerOnGround);
+    //  if (playerOnGround) {
+    //      player.velocity.y = 0;
+    //      player.jumping = false;
+    //  }
+    //  if (!playerOnPlatform && !playerOnGround) player.jumping = true;
 }
 
 animate();
