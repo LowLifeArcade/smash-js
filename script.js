@@ -22,8 +22,8 @@ const gravity = 1;
  */
 function Player() {
     this.position = {
-        x: 100,
-        y: 400,
+        x: 430,
+        y: 100,
     };
     this.velocity = {
         x: 0,
@@ -53,11 +53,11 @@ Player.prototype.update = function () {
         player.position.x <= ground.position.x + ground.width;
 
     if (inAirVertically) {
-        this.velocity.y = this.velocity.y + gravity;
         this.jumping = true;
+        this.velocity.y = this.velocity.y + gravity;
     } else {
-        this.velocity.y = 0;
         this.jumping = false;
+        this.velocity.y = 0;
     }
 };
 
