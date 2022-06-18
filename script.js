@@ -1,9 +1,19 @@
 const canvas = document.querySelector('canvas');
+const container = document.getElementsByClassName('container')
 
 let c = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = 500;
+canvas.width = 1200;
+canvas.height = 600;
+make_base();
+
+function make_base() {
+    base_image = new Image();
+    base_image.src = './public/laura-vinck-sky.jpeg';
+    base_image.onload = function () {
+        c.drawImage(base_image, 0, 0);
+    };
+}
 
 const gravity = 1;
 
@@ -21,9 +31,9 @@ function Player() {
     };
     this.width = 30;
     this.height = 50;
-    this.jumping = false
-    this.currentPosition
-    this.downPressed = false
+    this.jumping = false;
+    this.currentPosition;
+    this.downPressed = false;
 }
 
 Player.prototype.draw = function () {
@@ -37,147 +47,167 @@ Player.prototype.update = function () {
     this.position.x += this.velocity.x;
 
     // landing and jumping logic
-    if (this.position.y 
-        + this.height 
-        + this.velocity.y 
-        <= canvas.height - 20) {
-        this.velocity.y = this.velocity.y  + gravity;
-        this.jumping = true
+    if (this.position.y + this.height + this.velocity.y <= canvas.height - 20) {
+        this.velocity.y = this.velocity.y + gravity;
+        this.jumping = true;
     } else {
-        this.velocity.y = 0
-        this.jumping = false
+        this.velocity.y = 0;
+        this.jumping = false;
     }
 };
 
-function Platform() {
+function Platform({ posX = 200, posY = 300, width = 200, height = 20 } = {}) {
     this.position = {
-        x:200,
-        y: 300
-    }
-    this.width = 200
-    this.height = 20
-    this.draw = function() {
-        c.fillStyle = 'firebrick'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
+        x: posX,
+        y: posY,
+    };
+    this.width = width;
+    this.height = height;
+
+    this.draw = function () {
+        c.fillStyle = 'firebrick';
+        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    };
+}
+
+function Ground({ posX = 100, posY = 580, width, height = 20 } = {}) {
+    this.position = {
+        x: posX,
+        y: posY,
+    };
+    this.width = width;
+    this.height = height;
+
+    this.draw = function () {
+        c.fillStyle = 'firebrick';
+        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    };
 }
 
 const player = new Player();
-const platform = new Platform();
+const platform = new Platform({ posX: 200, posY: 400 });
+const platform2 = new Platform({ posX: 800, posY: 400 });
+const platform3 = new Platform({ posX: 500, posY: 240 });
+const ground = new Ground({width: 1000})
 
 const keys = {
     right: {
-        pressed: false
+        pressed: false,
     },
     left: {
-        pressed: false
-    }
-}
+        pressed: false,
+    },
+};
 
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
     player.update();
     platform.draw();
+    platform2.draw();
+    platform3.draw()
+    ground.draw()
 
-     // logs 
-    console.log('player current pos', player)
+    // logs
+    console.log('player current pos', player);
     // console.log('player vel', player.velocity.x)
 
     // movement logic
     if (keys.left.pressed || keys.right.pressed) {
-        if(Math.abs(player.velocity.x) > 15) {
-            player.velocity.x -= player.velocity.x /5
+        if (Math.abs(player.velocity.x) > 15) {
+            player.velocity.x -= player.velocity.x / 5;
             return;
-        };
-        if (keys.right.pressed) player.velocity.x += 1.4
-        if (keys.left.pressed) player.velocity.x += -1.4 
+        }
+        if (keys.right.pressed) player.velocity.x += 1.4;
+        if (keys.left.pressed) player.velocity.x += -1.4;
     } else {
         if (player.jumping) {
-            player.velocity.x -= player.velocity.x / 10
-        } else player.velocity.x -= player.velocity.x / 5
+            player.velocity.x -= player.velocity.x / 10;
+        } else player.velocity.x -= player.velocity.x / 5;
     }
-    if (Math.abs(player.velocity.x) < 1.3) player.velocity.x = 0
+    if (Math.abs(player.velocity.x) < 1.3) player.velocity.x = 0;
 
     // platform position detection TODO: Refactor to handle multiple platforms
-    if (player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width) {
-        player.velocity.y = 0
-        player.jumping = false
+    if (
+        player.position.y + player.height <= platform.position.y &&
+        player.position.y + player.height + player.velocity.y >= platform.position.y &&
+        player.position.x + player.width >= platform.position.x &&
+        player.position.x <= platform.position.x + platform.width
+    ) {
+        player.velocity.y = 0;
+        player.jumping = false;
     }
-
-   
 }
 
 animate();
 
-const directions = { UP: 'UP', }
+const directions = { UP: 'UP' };
 
-window.addEventListener('keydown', ({keyCode}) => {
+window.addEventListener('keydown', ({ keyCode }) => {
     switch (keyCode) {
         case 65:
-            console.log('left')
-            keys.left.pressed = true
+            console.log('left');
+            keys.left.pressed = true;
             // if (Math.abs(player.velocity.x) < 10){
             // }
             break;
         case 68:
-            console.log('right')
-            keys.right.pressed = true
+            console.log('right');
+            keys.right.pressed = true;
             // if (Math.abs(player.velocity.x)< 10){
             // }
             break;
         case 83:
-            console.log('down')
-            if(player.downPressed === false && player.jumping === false) {
-                // TODO: if (playerIsOnGround) return player.currentPosition always equals currentPosition until leaving ground 
-                player.currentPosition = player.position.y
+            console.log('down');
+            if (player.downPressed === false && player.jumping === false) {
+                // TODO: if (playerIsOnGround) return player.currentPosition always equals currentPosition until leaving ground
+                player.currentPosition = player.position.y;
                 player.downPressed = true;
             }
-            player.height = 30
+            player.height = 30;
             break;
         case 32:
-            console.log('up')
+            console.log('up');
             if (player.jumping === false) {
-                player.velocity.y -= 20
-                player.jumping = true 
+                player.velocity.y -= 20;
+                player.jumping = true;
             }
             break;
         default:
             break;
     }
-})
+});
 
-window.addEventListener('keyup', ({keyCode}) => {
+window.addEventListener('keyup', ({ keyCode }) => {
     switch (keyCode) {
         case 65:
-            console.log('left')
-            keys.left.pressed = false
+            console.log('left');
+            keys.left.pressed = false;
             // if (Math.abs(player.velocity.x) < 10){
             // }
             break;
         case 68:
-            console.log('right')
-            keys.right.pressed = false
+            console.log('right');
+            keys.right.pressed = false;
             // if (Math.abs(player.velocity.x) < 10){
             // }
             break;
         case 83:
-            console.log('down')
-            player.height = 50
+            console.log('down');
+            player.height = 50;
             // player.position.y = player.position.y + -10
             if (player.downPressed === true) {
-                player.position.y = player.currentPosition
-                player.downPressed = false
+                player.position.y = player.currentPosition;
+                player.downPressed = false;
             }
             break;
         case 32:
-            console.log('up')
+            console.log('up');
             if (player.jumping === true) {
-                player.velocity.y -= player.velocity.y /2 + gravity 
+                player.velocity.y -= player.velocity.y / 2 + gravity;
             }
             break;
         default:
             break;
     }
-})
-
+});

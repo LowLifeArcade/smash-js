@@ -5,6 +5,7 @@
     body {
         margin: 0;
         background-color: beige;
+    
     }
     .desc {
         display: flex;
@@ -12,17 +13,33 @@
         justify-content: center;
         align-items: center;
         background-color: aqua;
-        height: 200px;
+        /* height: 110px; */
+        padding: 20px;
         outline: 2px solid;
         box-shadow: 0 0 10px rgba(1, 208, 255, 0.7);
     }
     p {
         font-size: 1.6rem;
     }
+    .container {
+        display: grid;
+        place-items: center;
+        
+        /* width: 900px; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    canvas {
+        background-color: aquamarine;
+    }
 </style>
-<canvas></canvas>
+<div class="container">
+    <canvas></canvas>
+</div>
 <div class="desc">
-    <h1>Jump Man</h1>
+    <h1>Smash Bois</h1>
     <p>A and D move left and right. Space is jump.</p>
 </div>
 <script src="script.js"></script>
