@@ -5,15 +5,15 @@ let c = canvas.getContext('2d');
 
 canvas.width = 1200;
 canvas.height = 600;
-make_base();
+// make_base();
 
-function make_base() {
-    base_image = new Image();
-    base_image.src = './public/laura-vinck-sky.jpeg';
-    base_image.onload = function () {
-        c.drawImage(base_image, 0, 0);
-    };
-}
+// function make_base() {
+//     base_image = new Image();
+//     base_image.src = './public/laura-vinck-sky.jpeg';
+//     base_image.onload = function () {
+//         c.drawImage(base_image, 0, 0);
+//     };
+// }
 
 const gravity = 1;
 
