@@ -1,3 +1,27 @@
+const socket = new WebSocket('ws://localhost:8000')
+
+socket.onopen = function (event) {
+    console.log('conncted to server', event)
+}
+
+socket.onmessage =  function (event) {
+    console.log('message from server ', event.data)
+    if (event.data === 'player connected') {
+        console.log('player connected')
+    }
+}
+
+function playerTwoAction(action) {
+    return action
+}
+
+const sendMessage = () => {
+    socket.send('Im the frontend!')
+}
+const sendInputMessage = ([type, msg]) => {
+    socket.send([type, msg])
+}
+
 const canvas = document.querySelector('canvas');
 const container = document.getElementsByClassName('container');
 
@@ -20,10 +44,10 @@ const gravity = 1;
 /**
  * Player class
  */
-function Player() {
+function Player({posX = 430, posY = 100}) {
     this.position = {
-        x: 430,
-        y: 100,
+        x: posX,
+        y: posY,
     };
     this.velocity = {
         x: 0,
@@ -89,7 +113,8 @@ function Ground({ posX = 100, posY = 580, width, height = 20 } = {}) {
     };
 }
 
-const player = new Player();
+const player = new Player({posX: 430, posY: 100});
+const player2 = new Player({posX: 730, posY: 100});
 const platform = new Platform({ posX: 200, posY: 400 });
 const platform2 = new Platform({ posX: 800, posY: 400 });
 const platform3 = new Platform({ posX: 500, posY: 240 });
@@ -108,13 +133,14 @@ function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
     player.update();
+    player2.update()
     platform.draw();
     platform2.draw();
     platform3.draw();
     ground.draw();
 
     // logs
-    console.log('player current pos', player);
+    // console.log('player current pos', player);
     // console.log('player vel', player.velocity.x)
 
     // movement logic
@@ -180,6 +206,7 @@ animate();
 const directions = { UP: 'UP' };
 
 window.addEventListener('keydown', ({ keyCode }) => {
+    sendInputMessage(['keydown',keyCode])
     switch (keyCode) {
         case 65:
             console.log('left');
@@ -215,6 +242,8 @@ window.addEventListener('keydown', ({ keyCode }) => {
 });
 
 window.addEventListener('keyup', ({ keyCode }) => {
+    sendInputMessage(['keyup',keyCode])
+
     switch (keyCode) {
         case 65:
             console.log('left');
